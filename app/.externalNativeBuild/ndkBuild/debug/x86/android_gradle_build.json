@@ -1,0 +1,46 @@
+{
+  "buildFiles": [
+    "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk",
+    "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk"
+  ],
+  "cleanCommands": [
+    "/Library/android-ndk-r12b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk APP_ABI\u003dx86 NDK_ALL_ABIS\u003dx86 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/lib clean"
+  ],
+  "libraries": {
+    "hound-e-debug-x86": {
+      "buildCommand": "/Library/android-ndk-r12b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk APP_ABI\u003dx86 NDK_ALL_ABIS\u003dx86 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/lib /Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/x86/hound-e.so",
+      "toolchain": "toolchain-x86",
+      "abi": "x86",
+      "artifactName": "hound-e",
+      "files": [
+        {
+          "src": "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/scri/Hdog.cpp",
+          "flags": "\"-ffunction-sections\" \"-funwind-tables\" \"-no-canonical-prefixes\" \"-g\" \"-fstack-protector-strong\" \"-fno-exceptions\" \"-fno-rtti\" \"-O0\" \"-UNDEBUG\" \"-I/Library/android-ndk-r12b/sources/cxx-stl/stlport/stlport\" \"-I/Library/android-ndk-r12b/sources/cxx-stl//gabi++/include\" \"-I/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni\" \"-DANDROID\" \"-Wa,--noexecstack\" \"-Wformat\" \"-Werror\u003dformat-security\" \"-frtti\" \"-isystem\" \"/Library/android-ndk-r12b/platforms/android-14/arch-x86/usr/include\""
+        }
+      ],
+      "output": "/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/x86/hound-e.so"
+    },
+    "hound-s-debug-x86": {
+      "buildCommand": "/Library/android-ndk-r12b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk APP_ABI\u003dx86 NDK_ALL_ABIS\u003dx86 NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/lib /Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/x86/libhound-s.so",
+      "toolchain": "toolchain-x86",
+      "abi": "x86",
+      "artifactName": "hound-s",
+      "files": [
+        {
+          "src": "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/conn/Hound.cpp",
+          "flags": "\"-ffunction-sections\" \"-funwind-tables\" \"-no-canonical-prefixes\" \"-g\" \"-fstack-protector-strong\" \"-fno-exceptions\" \"-fno-rtti\" \"-O0\" \"-UNDEBUG\" \"-I/Library/android-ndk-r12b/sources/cxx-stl/stlport/stlport\" \"-I/Library/android-ndk-r12b/sources/cxx-stl//gabi++/include\" \"-I/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni\" \"-DANDROID\" \"-Wa,--noexecstack\" \"-Wformat\" \"-Werror\u003dformat-security\" \"-frtti\" \"-isystem\" \"/Library/android-ndk-r12b/platforms/android-14/arch-x86/usr/include\""
+        }
+      ],
+      "output": "/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/x86/libhound-s.so"
+    }
+  },
+  "toolchains": {
+    "toolchain-x86": {
+      "cppCompilerExecutable": "/Library/android-ndk-r12b/toolchains/x86-4.9/prebuilt/darwin-x86_64/bin/i686-linux-android-g++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

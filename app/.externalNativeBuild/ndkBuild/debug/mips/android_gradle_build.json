@@ -1,0 +1,46 @@
+{
+  "buildFiles": [
+    "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk",
+    "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk"
+  ],
+  "cleanCommands": [
+    "/Library/android-ndk-r12b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk APP_ABI\u003dmips NDK_ALL_ABIS\u003dmips NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/lib clean"
+  ],
+  "libraries": {
+    "hound-e-debug-mips": {
+      "buildCommand": "/Library/android-ndk-r12b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk APP_ABI\u003dmips NDK_ALL_ABIS\u003dmips NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/lib /Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/mips/hound-e.so",
+      "toolchain": "toolchain-mips",
+      "abi": "mips",
+      "artifactName": "hound-e",
+      "files": [
+        {
+          "src": "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/scri/Hdog.cpp",
+          "flags": "\"-fpic\" \"-finline-functions\" \"-ffunction-sections\" \"-funwind-tables\" \"-fstack-protector-strong\" \"-fmessage-length\u003d0\" \"-fno-inline-functions-called-once\" \"-fgcse-after-reload\" \"-frerun-cse-after-loop\" \"-frename-registers\" \"-no-canonical-prefixes\" \"-g\" \"-fno-exceptions\" \"-fno-rtti\" \"-O0\" \"-UNDEBUG\" \"-I/Library/android-ndk-r12b/sources/cxx-stl/stlport/stlport\" \"-I/Library/android-ndk-r12b/sources/cxx-stl//gabi++/include\" \"-I/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni\" \"-DANDROID\" \"-Wa,--noexecstack\" \"-Wformat\" \"-Werror\u003dformat-security\" \"-frtti\" \"-isystem\" \"/Library/android-ndk-r12b/platforms/android-14/arch-mips/usr/include\""
+        }
+      ],
+      "output": "/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/mips/hound-e.so"
+    },
+    "hound-s-debug-mips": {
+      "buildCommand": "/Library/android-ndk-r12b/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Android.mk NDK_APPLICATION_MK\u003d/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/Application.mk APP_ABI\u003dmips NDK_ALL_ABIS\u003dmips NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-14 NDK_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003d/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/lib /Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/mips/libhound-s.so",
+      "toolchain": "toolchain-mips",
+      "abi": "mips",
+      "artifactName": "hound-s",
+      "files": [
+        {
+          "src": "/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni/conn/Hound.cpp",
+          "flags": "\"-fpic\" \"-finline-functions\" \"-ffunction-sections\" \"-funwind-tables\" \"-fstack-protector-strong\" \"-fmessage-length\u003d0\" \"-fno-inline-functions-called-once\" \"-fgcse-after-reload\" \"-frerun-cse-after-loop\" \"-frename-registers\" \"-no-canonical-prefixes\" \"-g\" \"-fno-exceptions\" \"-fno-rtti\" \"-O0\" \"-UNDEBUG\" \"-I/Library/android-ndk-r12b/sources/cxx-stl/stlport/stlport\" \"-I/Library/android-ndk-r12b/sources/cxx-stl//gabi++/include\" \"-I/Users/xiangqing/Documents/project/dex-hdog/app/src/main/jni\" \"-DANDROID\" \"-Wa,--noexecstack\" \"-Wformat\" \"-Werror\u003dformat-security\" \"-frtti\" \"-isystem\" \"/Library/android-ndk-r12b/platforms/android-14/arch-mips/usr/include\""
+        }
+      ],
+      "output": "/Users/xiangqing/Documents/project/dex-hdog/app/build/intermediates/ndkBuild/debug/obj/local/mips/libhound-s.so"
+    }
+  },
+  "toolchains": {
+    "toolchain-mips": {
+      "cppCompilerExecutable": "/Library/android-ndk-r12b/toolchains/mipsel-linux-android-4.9/prebuilt/darwin-x86_64/bin/mipsel-linux-android-g++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}
