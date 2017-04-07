@@ -30,7 +30,7 @@ public class RootUtil {
             dos.flush();
             String line = null;
             while ((line = dis.readLine()) != null) {
-                result += line;
+                result += line + "\n";
             }
             p.waitFor();
         } catch (Exception e) {
@@ -54,4 +54,12 @@ public class RootUtil {
         return result;
     }
 
+    public static boolean isRoot(){
+        String result = execRootCmd("id");
+        if(result.contains("uid=0") && result.contains("root")){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

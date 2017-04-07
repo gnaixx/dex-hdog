@@ -1,10 +1,5 @@
 LOCAL_PATH := $(call my-dir)
 
-############# 添加自定义编译脚本 #############
-# http://www.cnblogs.com/wi100sh/p/4308594.html
-MY_BUILD_EXECUTABLE := $(LOCAL_PATH)/my-build-executable.mk
-include $(call all-subdir-makefiles)
-
 ############# 动态链接库 #############
 include $(CLEAR_VARS)
 
@@ -17,6 +12,14 @@ include $(BUILD_SHARED_LIBRARY)
 
 ############# 可执行库 #############
 include $(CLEAR_VARS)
+
+## 支持可执行文件打包到apk http://www.cnblogs.com/wi100sh/p/4308594.html ##
+MY_BUILD_EXECUTABLE := $(LOCAL_PATH)/my-build-executable.mk
+include $(call all-subdir-makefiles)
+
+## 支持PIE ##
+LOCAL_CFLAGS += -pie -fPIE
+LOCAL_LDFLAGS += -pie -fPIE
 
 LOCAL_MODULE := hound-e
 LOCAL_SRC_FILES := scri/Hdog.cpp

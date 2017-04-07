@@ -29,5 +29,10 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 jstring hunting(JNIEnv *env, jclass clazz, jstring) {
+    LOGI("%d",getuid());
+    if(setuid(0) == -1){
+        printf("Get root failed: %d, %s\n", errno, strerror(errno));
+    }
+    LOGI("%d", getuid());
     return env->NewStringUTF("hunting");
 }
