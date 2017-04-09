@@ -20,7 +20,7 @@ int Hdog::getProcessPid(const char *process) {
     sprintf(cmd, "ps | grep %s", process);
     FILE *fp = popen(cmd, "r");
     if (fp == NULL) {
-        printf("Exec popen failed {%d, %s}\n", errno, strerror(errno));
+        printf("* Exec popen failed {%d, %s}\n", errno, strerror(errno));
         return 0;
     }
     while (fgets(buff, sizeof(buff), fp) != NULL) {
@@ -43,7 +43,7 @@ int Hdog::getProcessPid(const char *process) {
     char fileName[MAX_NAME_LEN];
     DIR *dirProc;
     if ((dirProc = opendir("/proc")) == NULL) {
-        printf("Error: exec opendir failed {%d, %s}\n", errno, strerror(errno));
+        printf("* Exec opendir failed {%d, %s}\n", errno, strerror(errno));
         return 0;
     }
     struct dirent *dirent;
@@ -76,7 +76,7 @@ int Hdog::getSubPid(int targetPid) {
     sprintf(taskDirName, "/proc/%d/task/", targetPid);
     DIR *rootDir = opendir(taskDirName);
     if (rootDir == NULL) {
-        printf("Open dir %s failed {%d, %s}\n", taskDirName, errno, strerror(errno));
+        printf("* Open dir %s failed {%d, %s}\n", taskDirName, errno, strerror(errno));
         return 0;
     }
 
@@ -86,7 +86,7 @@ int Hdog::getSubPid(int targetPid) {
         lastDirent = dirent;
     }
     if (lastDirent == NULL) {
-        printf("Error: last dirent is null\n");
+        printf("* Last dirent is null\n");
         return 0;
     }
     closedir(rootDir);
@@ -103,25 +103,25 @@ int Hdog::attachPid(int pid) {
     sprintf(memName, "/proc/%d/mem", pid);
     long ret = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
     if (ret != 0) {
-        printf("Attach %d failed {%d, %s}\n", pid, errno, strerror(errno));
+        printf("* Attach %d failed {%d, %s}\n", pid, errno, strerror(errno));
         return 0;
     } else {
         int memFp = open(memName, O_RDONLY);
         if (memFp == 0) {
-            printf("Open %s failed: %d, %s\n", memName, errno, strerror(errno));
+            printf("* Open %s failed: %d, %s\n", memName, errno, strerror(errno));
         }
         return memFp;
     }
 }
 
 int Hdog::dumpMems(int clonePid, int memFp, const char *dumpedPath) {
-    printf("Scanning dex\n");
+    printf("> Scanning dex ********************\n");
 
     char mapsName[MAX_NAME_LEN];
     sprintf(mapsName, "/proc/%d/maps", clonePid);
     FILE *mapsFp = fopen(mapsName, "r");
     if (mapsFp == NULL) {
-        printf("Open %s failed: %d, %s\n", mapsName, errno, strerror(errno));
+        printf("* Open %s failed: %d, %s\n", mapsName, errno, strerror(errno));
         return 0;
     }
 
@@ -135,7 +135,7 @@ int Hdog::dumpMems(int clonePid, int memFp, const char *dumpedPath) {
         memName[0] = '\0'; //重置为空
         int rv = sscanf(memLine, "%llx-%llx %*s %*s %*s %*s %s\n", &start, &end, memName);
         if (rv < 2) {
-            printf("Scanf failed: %d, %s\n", errno, strerror(errno));
+            printf("* Scanf failed: %d, %s\n", errno, strerror(errno));
             continue;
         } else {
             if (strcmp(preMemName, memName) == 0 && strcmp(memName, "") != 0) continue; //忽略同名的分割区段
@@ -150,26 +150,30 @@ int Hdog::dumpMems(int clonePid, int memFp, const char *dumpedPath) {
     }
     free(memRegion);
     fclose(mapsFp);
-    printf("Scanning end\n");
+    printf("> Scanning end ********************\n \n");
 }
 
 int Hdog::seekDex(int memFp, MemRegion *memRegion, const char *dumpedPath, int dexNum) {
     char dexName[MAX_NAME_LEN];
     char dumpedName[MAX_NAME_LEN];
     char memName[MAX_NAME_LEN];
-    strcpy(memName, memRegion->name);
-    char *token = strtok(memName, "/");
-    while(token){
-        strcpy(dexName, token);
-        token = strtok(NULL, "/");
-    }
-    if(dexName == NULL || strcmp(dexName, "") == 0){
+    if(strcmp(memRegion->name, "") == 0) {
         sprintf(dexName, "classes%d.dex", dexNum);
+    }else{
+        strcpy(memName, memRegion->name);
+        char *token = strtok(memName, "/");
+        while (token) {
+            strcpy(dexName, token);
+            token = strtok(NULL, "/");
+        }
+        if (dexName == NULL || strcmp(dexName, "") == 0) {
+            sprintf(dexName, "classes%d.dex", dexNum);
+        }
     }
 
     off64_t off = lseek64(memFp, memRegion->start, SEEK_SET);
     if (off == -1) {
-        printf("Lseek %d failed: %d, %s\n", memFp, errno, strerror(errno));
+        printf("* Lseek %d failed: %d, %s\n", memFp, errno, strerror(errno));
     } else {
         unsigned char *buffer = (unsigned char *) malloc(memRegion->len);
         ssize_t readLen = read(memFp, buffer, memRegion->len);
@@ -177,23 +181,23 @@ int Hdog::seekDex(int memFp, MemRegion *memRegion, const char *dumpedPath, int d
             //printf("MemInfo:%s, memLen:%ld, start:%llx, readLen:%ld\n", memRegion->name, memRegion->len, memRegion->start, readLen);
             DexHeader *dexHeader = (DexHeader *) malloc(sizeof(DexHeader));
             memcpy(dexHeader, buffer, sizeof(DexHeader));
-            printf("Find dex %s, size:%x\n", memRegion->name, dexHeader->fileSize);
+            printf("> Find dex %s, size:%x\n", memRegion->name, dexHeader->fileSize);
             sprintf(dumpedName, "%s/%s/%s", dumpedPath, "dex", dexName);
-            dexNum = readMem(memFp, memRegion->start, dexHeader->fileSize, dumpedName, dexNum);
+            dexNum = readMem(memFp, memRegion->start, dexHeader->fileSize, dumpedName, dexName, dexNum);
         }
         else if(strncmp((const char *) buffer, "dey\n036\0", 8) == 0) {
             if(strstr(memRegion->name, "system@framework") == NULL) { //忽略系统框架文件
                 DexOptHeader *dexOptHeader = (DexOptHeader *) malloc(sizeof(DexOptHeader));
                 memcpy(dexOptHeader, buffer, sizeof(DexOptHeader));
                 uint32_t fileSize = dexOptHeader->optOffset + dexOptHeader->optLength;
-                printf("Find odex %s, size:%d\n", memRegion->name, fileSize);
+                //printf("Find odex %s, size:%d\n", memRegion->name, fileSize);
                 sprintf(dumpedName, "%s/%s/%s", dumpedPath, "dey", dexName);
-                dexNum = readMem(memFp, memRegion->start, fileSize, dumpedName, dexNum);
+                dexNum = readMem(memFp, memRegion->start, fileSize, dumpedName, dexName, dexNum);
             }
         }
         else{
             if (strstr(memRegion->name, ".dex") != NULL) {
-                printf("Ignore %s, %d %d %d %d,%d %d %d %d\n", memRegion->name, buffer[0],buffer[1],buffer[2],buffer[3],buffer[4],buffer[5],buffer[6],buffer[7]);
+                printf("* Ignore %s, %d %d %d %d,%d %d %d %d\n", memRegion->name, buffer[0],buffer[1],buffer[2],buffer[3],buffer[4],buffer[5],buffer[6],buffer[7]);
             }
         }
         free(buffer);
@@ -202,21 +206,22 @@ int Hdog::seekDex(int memFp, MemRegion *memRegion, const char *dumpedPath, int d
     return dexNum;
 }
 
-int Hdog::readMem(int memFp, uint64_t start, uint32_t len, const char *dumpedName, int dexNum){
+int Hdog::readMem(int memFp, uint64_t start, uint32_t len, const char *dumpedName, const char *dexName, int dexNum){
+
     if (lseek64(memFp, start, SEEK_SET) != -1) {
         char *dexRaw = (char *) malloc(len * sizeof(char));
         ssize_t dexSize = read(memFp, dexRaw, len);
         //printf("xxxx %s, %ld, %d, %d, %s\n", dumpedName, odexSize, fileSize, errno, strerror(errno));
         if (writeMem(dexRaw, dexSize, dumpedName) == 1) {
             dexNum++;
-            printf("Dump %s success\n", dumpedName);
+            printf("> Dump success -> %s, len:%d\n", dexName, len);
         } else {
-            printf("Dump %s failed\n", dumpedName);
+            printf("> Dump failed -> %s\n", dexName);
         }
         free(dexRaw);
         dexRaw = NULL;
     } else {
-        printf("Lseek %d failed: %d, %s\n", memFp, errno, strerror(errno));
+        printf("* Lseek %d failed: %d, %s\n", memFp, errno, strerror(errno));
     }
     return dexNum;
 }
@@ -227,7 +232,7 @@ int Hdog::writeMem(const char *dexRaw, uint64_t size, const char *dumpedName) {
     if (fwrite(dexRaw, sizeof(char), size, fp) == size) {
         res = 1;
     } else {
-        printf("Write %s failed: %d, %s\n", dumpedName, errno, strerror(errno));
+        printf("* Write %s failed: %d, %s\n", dumpedName, errno, strerror(errno));
     }
     fclose(fp);
     return res;
@@ -244,21 +249,21 @@ int main(int argc, char *argv[]) {
 
     targetPid = hdog.getProcessPid(packageName);
     if (targetPid == 0) {
-        printf("Can`t find \"%s\"\n", packageName);
+        printf("* Can`t find \"%s\"\n", packageName);
         return 0;
     } else {
         attachPid = hdog.getSubPid(targetPid);
         if (attachPid == 0) {
-            printf("Get sub pid failed\n");
+            printf("* Get sub pid failed\n");
             return 0;
         } else {
-            printf("Target pid:%d, attach pid:%d\n", targetPid, attachPid);
+            printf("> Target pid:%d\n", targetPid);
             memFp = hdog.attachPid(attachPid);
             if (memFp == 0) {
-                printf("Attach %d failed\n", attachPid);
+                printf("* Attach %d failed\n", attachPid);
                 return 0;
             } else {
-                printf("Attach %d success\n", attachPid);
+                printf("> Attach pid:%d\n", attachPid);
                 sprintf(dumpedPath, "%s%s", OUTPUT_PATH, packageName);
                 hdog.dumpMems(attachPid, memFp, dumpedPath);
 

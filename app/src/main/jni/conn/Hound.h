@@ -7,6 +7,6 @@
 
 #include "Common.h"
 
-jstring hunting(JNIEnv *, jclass, jstring);
+jboolean isRunning(JNIEnv *, jclass, jstring);
 
 #endif //DEX_HOUND_HOUND_CPP_H

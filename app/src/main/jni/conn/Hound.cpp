@@ -5,7 +5,7 @@
 #include "Hound.h"
 
 static JNINativeMethod gMethods[] = {
-        {"hunting", "(Ljava/lang/String;)Ljava/lang/String;", (void *) hunting},
+        {"isRunning", "(Ljava/lang/String;)Z", (void *) isRunning},
 };
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
@@ -28,11 +28,35 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     return JNI_VERSION_1_6;
 }
 
-jstring hunting(JNIEnv *env, jclass clazz, jstring) {
+jboolean isRunning(JNIEnv *env, jclass clazz, jstring jpackageName) {
     LOGI("%d",getuid());
     if(setuid(0) == -1){
         printf("Get root failed: %d, %s\n", errno, strerror(errno));
     }
     LOGI("%d", getuid());
-    return env->NewStringUTF("hunting");
+
+    const char *packageName = env->GetStringUTFChars(jpackageName, NULL);
+    int isRunning  = JNI_FALSE;
+    char cmd[256];
+    char process[256];
+    char buff[1024];
+
+    sprintf(cmd, "ps | grep %s", packageName);
+    FILE *fp = popen(cmd, "r");
+    if (fp == NULL) {
+        printf("Exec popen failed {%d, %s}\n", errno, strerror(errno));
+    }else {
+        while (fgets(buff, sizeof(buff), fp) != NULL) {
+            uint32_t pid = 0;
+            sscanf(buff, "%*s\t%d  %*d\t%*d %*d %*x %*x %*c %s", &pid, process);
+            //printf("Read pid:%d, process:%s\n", pid, targetProcess);
+            if (strcmp(process, packageName) == 0) {
+                isRunning = JNI_TRUE;
+                break;
+            }
+        }
+        fclose(fp);
+        fp = NULL;
+    }
+    return isRunning;
 }

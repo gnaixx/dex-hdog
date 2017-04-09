@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 ############# 动态链接库 #############
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := hound-s
+LOCAL_MODULE := hound-c
 LOCAL_SRC_FILES := conn/Hound.cpp
 LOCAL_LDLIBS += -L$(SYSROOT)/usr/lib -llog
 

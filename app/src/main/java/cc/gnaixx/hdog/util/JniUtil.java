@@ -11,8 +11,8 @@ package cc.gnaixx.hdog.util;
 public class JniUtil {
 
     static {
-        System.loadLibrary("hound-s");
+        System.loadLibrary("hound-c");
     }
 
-    public static native String hunting(String packageName);
+    public static native boolean isRunning(String packageName);
 }

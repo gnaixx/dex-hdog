@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">hdog</string>
+    <string name="app_name">脱壳狗</string>
     <string name="main_view_label">脱壳狗</string>
 
     <string name="warring">!!! 请先root设备，再执行脱壳操作 !!!</string>

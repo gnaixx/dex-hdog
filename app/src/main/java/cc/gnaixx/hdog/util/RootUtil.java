@@ -1,5 +1,8 @@
 package cc.gnaixx.hdog.util;
 
+import android.os.Handler;
+import android.os.Message;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,8 +16,13 @@ import java.io.IOException;
  */
 
 public class RootUtil {
+    public static String execRootCmd(String cmd){
+        return execRootCmd(cmd, null);
+    }
+
+
     // 执行命令并且输出结果
-    public static String execRootCmd(String cmd) {
+    public static String execRootCmd(String cmd, Handler handler) {
         String result = "";
         DataOutputStream dos = null;
         DataInputStream dis = null;
@@ -31,6 +39,12 @@ public class RootUtil {
             String line = null;
             while ((line = dis.readLine()) != null) {
                 result += line + "\n";
+                if(handler != null){
+                    Message msg = handler.obtainMessage();
+                    msg.what = 0;
+                    msg.obj = line + "\n";
+                    handler.sendMessage(msg);
+                }
             }
             p.waitFor();
         } catch (Exception e) {

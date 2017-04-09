@@ -98,7 +98,7 @@ typedef struct MemRegion {
 class Hdog {
 private:
     int seekDex(int, MemRegion*, const char*, int);
-    int readMem(int, uint64_t, uint32_t, const char *, int );
+    int readMem(int, uint64_t, uint32_t, const char *, const char *, int );
     int writeMem(const char*, uint64_t, const char*);
 
 public:
