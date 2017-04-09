@@ -73,20 +73,33 @@ typedef struct DexHeader {
     u4 classDefsOff;
     u4 dataSize;
     u4 dataOff;
-} DexHeader;
+};
+
+struct DexOptHeader {
+    u1  magic[8];
+    u4  dexOffset;
+    u4  dexLength;
+    u4  depsOffset;
+    u4  depsLength;
+    u4  optOffset;
+    u4  optLength;
+    u4  flags;
+    u4  checksum;
+};
 
 typedef struct MemRegion {
     uint64_t start;
     uint64_t end;
     uint64_t len;
     char     name[MAX_NAME_LEN];
-} MemRegion;
+};
 
 
 class Hdog {
 private:
-    int writeMem(const char*, uint64_t, const char[]);
     int seekDex(int, MemRegion*, const char*, int);
+    int readMem(int, uint64_t, uint32_t, const char *, int );
+    int writeMem(const char*, uint64_t, const char*);
 
 public:
     int getProcessPid(const char *);

@@ -5,15 +5,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cc.gnaixx.dex_hound.MainActivity">
+    tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_root_status"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:text="@string/warring"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/root_status"/>
+
+    <ListView
+        android:id="@+id/lv_app_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@drawable/list_item_divider"
+        android:dividerHeight="1dp"/>
 
 </android.support.constraint.ConstraintLayout>

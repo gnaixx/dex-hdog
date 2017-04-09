@@ -1,4 +1,4 @@
-package cc.gnaixx.dex_hound.util;
+package cc.gnaixx.hdog.util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -22,7 +22,7 @@ LOCAL_CFLAGS += -pie -fPIE
 LOCAL_LDFLAGS += -pie -fPIE
 
 LOCAL_MODULE := hound-e
-LOCAL_SRC_FILES := scri/Hdog.cpp
+LOCAL_SRC_FILES := exec/Hdog.cpp
 MY_LOCAL_MODULE_FILENAME := hound-e.so
 
 include  $(MY_BUILD_EXECUTABLE)

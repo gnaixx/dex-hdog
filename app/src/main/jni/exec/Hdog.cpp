@@ -5,8 +5,11 @@
 
 #include "Hdog.h"
 
-using namespace std;
-
+/**
+ * 获取进程的pid
+ * @param process 进程名(包名)
+ * @return
+ */
 int Hdog::getProcessPid(const char *process) {
     char cmd[MAX_BUFF];
     char buff[MAX_BUFF];
@@ -63,6 +66,11 @@ int Hdog::getProcessPid(const char *process) {
     return targetPid;
 }
 
+/**
+ * 获取进程的子线程
+ * @param targetPid 目标进程
+ * @return
+ */
 int Hdog::getSubPid(int targetPid) {
     char taskDirName[MAX_NAME_LEN];
     sprintf(taskDirName, "/proc/%d/task/", targetPid);
@@ -85,6 +93,11 @@ int Hdog::getSubPid(int targetPid) {
     return atoi(lastDirent->d_name);
 }
 
+/**
+ * 要附加进程pid
+ * @param pid
+ * @return
+ */
 int Hdog::attachPid(int pid) {
     char memName[MAX_NAME_LEN];
     sprintf(memName, "/proc/%d/mem", pid);
@@ -103,22 +116,21 @@ int Hdog::attachPid(int pid) {
 
 int Hdog::dumpMems(int clonePid, int memFp, const char *dumpedPath) {
     printf("Scanning dex\n");
+
     char mapsName[MAX_NAME_LEN];
     sprintf(mapsName, "/proc/%d/maps", clonePid);
-
     FILE *mapsFp = fopen(mapsName, "r");
     if (mapsFp == NULL) {
         printf("Open %s failed: %d, %s\n", mapsName, errno, strerror(errno));
         return 0;
     }
 
-    char memLine[MAX_BUFF];
     int dexNum = 1;
-
+    uint64_t start, end;
+    char memLine[MAX_BUFF];
     char memName[MAX_NAME_LEN];
     char preMemName[MAX_NAME_LEN];
     MemRegion *memRegion = (MemRegion *) malloc(sizeof(MemRegion));
-    uint64_t start, end;
     while (fgets(memLine, sizeof(memLine), mapsFp) != NULL) {
         memName[0] = '\0'; //重置为空
         int rv = sscanf(memLine, "%llx-%llx %*s %*s %*s %*s %s\n", &start, &end, memName);
@@ -126,17 +138,14 @@ int Hdog::dumpMems(int clonePid, int memFp, const char *dumpedPath) {
             printf("Scanf failed: %d, %s\n", errno, strerror(errno));
             continue;
         } else {
-            if (strcmp(preMemName, memName) == 0 && strcmp(memName, "") != 0) continue;
+            if (strcmp(preMemName, memName) == 0 && strcmp(memName, "") != 0) continue; //忽略同名的分割区段
             strcpy(preMemName, memName);
             //printf("%llx-%llx %s\n", start, end, memName);
             memRegion->start = start;
             memRegion->end = end;
             memRegion->len = end - start;
             strcpy(memRegion->name, memName);
-
             dexNum = seekDex(memFp, memRegion, dumpedPath, dexNum);
-            //memRegion->start = start + 8;
-            //dexNum = seekDex(memFp, memRegion, dumpedPath, dexNum);
         }
     }
     free(memRegion);
@@ -145,7 +154,18 @@ int Hdog::dumpMems(int clonePid, int memFp, const char *dumpedPath) {
 }
 
 int Hdog::seekDex(int memFp, MemRegion *memRegion, const char *dumpedPath, int dexNum) {
+    char dexName[MAX_NAME_LEN];
     char dumpedName[MAX_NAME_LEN];
+    char memName[MAX_NAME_LEN];
+    strcpy(memName, memRegion->name);
+    char *token = strtok(memName, "/");
+    while(token){
+        strcpy(dexName, token);
+        token = strtok(NULL, "/");
+    }
+    if(dexName == NULL || strcmp(dexName, "") == 0){
+        sprintf(dexName, "classes%d.dex", dexNum);
+    }
 
     off64_t off = lseek64(memFp, memRegion->start, SEEK_SET);
     if (off == -1) {
@@ -157,27 +177,22 @@ int Hdog::seekDex(int memFp, MemRegion *memRegion, const char *dumpedPath, int d
             //printf("MemInfo:%s, memLen:%ld, start:%llx, readLen:%ld\n", memRegion->name, memRegion->len, memRegion->start, readLen);
             DexHeader *dexHeader = (DexHeader *) malloc(sizeof(DexHeader));
             memcpy(dexHeader, buffer, sizeof(DexHeader));
-            printf("Find %s, fileSize:%x\n", memRegion->name, dexHeader->fileSize);
-
-            if (lseek64(memFp, memRegion->start, SEEK_SET) != -1) {
-                char *dexRaw = (char *) malloc(dexHeader->fileSize);
-                ssize_t dexSize = read(memFp, dexRaw, dexHeader->fileSize);
-                sprintf(dumpedName, "%s/%s%d.dex", dumpedPath, "class", dexNum);
-                //printf("xxxx %s, %x, %s\n", dumpedName, dexSize, dexRaw);
-                if (writeMem(dexRaw, dexSize, dumpedName) == 1) {
-                    dexNum++;
-                    printf("Dump %s success\n", dumpedName);
-                } else {
-                    printf("Dump %s failed\n", dumpedName);
-                }
-                free(dexRaw);
-                dexRaw = NULL;
-            } else {
-                printf("Lseek %d failed: %d, %s\n", memFp, errno, strerror(errno));
+            printf("Find dex %s, size:%x\n", memRegion->name, dexHeader->fileSize);
+            sprintf(dumpedName, "%s/%s/%s", dumpedPath, "dex", dexName);
+            dexNum = readMem(memFp, memRegion->start, dexHeader->fileSize, dumpedName, dexNum);
+        }
+        else if(strncmp((const char *) buffer, "dey\n036\0", 8) == 0) {
+            if(strstr(memRegion->name, "system@framework") == NULL) { //忽略系统框架文件
+                DexOptHeader *dexOptHeader = (DexOptHeader *) malloc(sizeof(DexOptHeader));
+                memcpy(dexOptHeader, buffer, sizeof(DexOptHeader));
+                uint32_t fileSize = dexOptHeader->optOffset + dexOptHeader->optLength;
+                printf("Find odex %s, size:%d\n", memRegion->name, fileSize);
+                sprintf(dumpedName, "%s/%s/%s", dumpedPath, "dey", dexName);
+                dexNum = readMem(memFp, memRegion->start, fileSize, dumpedName, dexNum);
             }
-        } else {
-            //printf("%s\n", memRegion->name);
-            if (strstr(memRegion->name, ".dex") != NULL && strncmp((const char *) buffer, "dey\n036\0", 8) != 0) {
+        }
+        else{
+            if (strstr(memRegion->name, ".dex") != NULL) {
                 printf("Ignore %s, %d %d %d %d,%d %d %d %d\n", memRegion->name, buffer[0],buffer[1],buffer[2],buffer[3],buffer[4],buffer[5],buffer[6],buffer[7]);
             }
         }
@@ -187,7 +202,26 @@ int Hdog::seekDex(int memFp, MemRegion *memRegion, const char *dumpedPath, int d
     return dexNum;
 }
 
-int Hdog::writeMem(const char *dexRaw, uint64_t size, const char dumpedName[]) {
+int Hdog::readMem(int memFp, uint64_t start, uint32_t len, const char *dumpedName, int dexNum){
+    if (lseek64(memFp, start, SEEK_SET) != -1) {
+        char *dexRaw = (char *) malloc(len * sizeof(char));
+        ssize_t dexSize = read(memFp, dexRaw, len);
+        //printf("xxxx %s, %ld, %d, %d, %s\n", dumpedName, odexSize, fileSize, errno, strerror(errno));
+        if (writeMem(dexRaw, dexSize, dumpedName) == 1) {
+            dexNum++;
+            printf("Dump %s success\n", dumpedName);
+        } else {
+            printf("Dump %s failed\n", dumpedName);
+        }
+        free(dexRaw);
+        dexRaw = NULL;
+    } else {
+        printf("Lseek %d failed: %d, %s\n", memFp, errno, strerror(errno));
+    }
+    return dexNum;
+}
+
+int Hdog::writeMem(const char *dexRaw, uint64_t size, const char *dumpedName) {
     int res = -1;
     FILE *fp = fopen(dumpedName, "wb");
     if (fwrite(dexRaw, sizeof(char), size, fp) == size) {
