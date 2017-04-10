@@ -1,4 +1,4 @@
-package cc.gnaixx.dex_hound;
+package cc.gnaixx.hdog;
 
 import org.junit.Test;
 

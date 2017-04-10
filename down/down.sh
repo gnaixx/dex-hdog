@@ -3,6 +3,7 @@
 #固定常量
 PHONE_ROOT_DIR="/sdcard/Hdog/"       #手机存储根目录
 LOCAL_ROOT_DIR="Hdog"                #本地存储根目录
+LOCAL_FRAMEWORK="framework"          #本地框架目录
 PHONE_FRAMEWORK="/system/framework/" #framework 文件还原odex
 
 ###########################################################
@@ -45,12 +46,12 @@ function decode_odex(){
                     base_odex=$(basename ${odex_dir})
                     dir_odex=$(dirname ${odex_dir})
 
+                    echo "> Decode -> o-${base_odex%.*}.odex"
                     baksmali x ${odex_dir} -d $2 -o ${dir_odex}/smali
                     mv ${odex_dir} "${dir_odex}/bak/o-${base_odex%.*}.odex"
                     smali a ${dir_odex}/smali -o ${odex_dir%.*}.dex
                     rm -rf ${dir_odex}/smali
 
-                    echo "> Decode -> o-${base_odex%.*}.odex"
                 fi
             done
         fi
@@ -65,6 +66,7 @@ function decode_odex(){
 function main(){
     check_env #check env
 
+    clean_dir ${LOCAL_FRAMEWORK}
     adb pull ${PHONE_FRAMEWORK} . #down framework
     if [[ -n $@ ]]; then
         for arg in "$@"
@@ -77,9 +79,9 @@ function main(){
         done
     else
         clean_dir ${LOCAL_ROOT_DIR} #clean local storage
-        adb pull ${PHONE_ROOT_DIR} ${LOCAL_ROOT_DIR}
+        adb pull ${PHONE_ROOT_DIR} .
         echo "> Download all dumped ${PHONE_ROOT_DIR} -> ${LOCAL_ROOT_DIR}"
-        decode_odex ${LOCAL_ROOT_DIR}/* "framework"
+        decode_odex ${LOCAL_ROOT_DIR}/* ${LOCAL_FRAMEWORK}
     fi
 }
 
