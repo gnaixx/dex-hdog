@@ -181,7 +181,7 @@ int Hdog::seekDex(int memFp, MemRegion *memRegion, const char *dumpedPath, int d
             //printf("MemInfo:%s, memLen:%ld, start:%llx, readLen:%ld\n", memRegion->name, memRegion->len, memRegion->start, readLen);
             DexHeader *dexHeader = (DexHeader *) malloc(sizeof(DexHeader));
             memcpy(dexHeader, buffer, sizeof(DexHeader));
-            printf("> Find dex %s, size:%x\n", memRegion->name, dexHeader->fileSize);
+            //printf("> Find dex %s, size:%x\n", memRegion->name, dexHeader->fileSize);
             sprintf(dumpedName, "%s/%s/%s", dumpedPath, "dex", dexName);
             dexNum = readMem(memFp, memRegion->start, dexHeader->fileSize, dumpedName, dexName, dexNum);
         }

@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         ListView listView = (ListView) parent;
         AppInfo appInfo = (AppInfo) listView.getItemAtPosition(position);
         String packageName = appInfo.getPackageName();
+        String appName = appInfo.getAppName();
         Log.d(TAG, packageName);
         if(!JniUtil.isRunning(packageName)){
             openApp(packageName);
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
 
         Intent intent = new Intent(this, DumpActivity.class);
         intent.putExtra("package_name", packageName);
+        intent.putExtra("app_name", appName);
         startActivity(intent);
     }
 
